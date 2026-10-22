@@ -1,0 +1,20 @@
+.env
+.env.*
+!.env.example
+.venv/
+logs/
+data/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+evaluation/results/replay_*.json
+evaluation/results/replay_*.md
+evaluation/results/live_*.json
+# Keep the latest generated report and the human-annotation batch for reviewers.
+!evaluation/results/replay_latest.json
+!evaluation/results/replay_latest.md
+!evaluation/results/annotation_batch.csv
+.DS_Store
+Thumbs.db
+*.log

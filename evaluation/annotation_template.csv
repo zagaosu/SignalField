@@ -1,0 +1,2 @@
+batch_id,profile,scenario,case_type,event_id,event_title,topic,event_date,change_type,facts_count,source_domains,auto_time_fit,human_relevance_0_2,human_time_fit_0_1,human_fact_support_0_2,human_independent_confirmation_0_1,human_change_judgment,human_note
+EXAMPLE,B,normal_release,normal_release,evt_example,Nova Agent 1.2 新增可审计工具日志,Agent,2026-10-19,new,2,nova.invalid,True,2,1,2,0,new,示例行：请按 annotation_guide.md 填写后删除

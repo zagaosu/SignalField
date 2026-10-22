@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f4f1e9">
+  <meta name="description" content="信号场：覆盖技术、生活、运动与新闻的兴趣动态搜索 Agent，带证据链和补搜决策。">
+  <title>信号场 SignalField · 个人兴趣动态雷达</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/styles.css?v=14">
+</head>
+<body data-view="home">
+  <div class="noise" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="信号场首页">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 34 34" fill="none">
+          <circle cx="17" cy="17" r="14.5" stroke="currentColor" stroke-width="1.4"/>
+          <circle cx="17" cy="17" r="8.2" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
+          <circle cx="17" cy="17" r="2.1" fill="currentColor"/>
+          <path d="M17 2.5V9M17 25v6.5M2.5 17H9M25 17h6.5" stroke="currentColor" stroke-width="1.4"/>
+        </svg>
+      </span>
+      <span class="brand-copy">
+        <strong>信号场</strong>
+        <small>SIGNALFIELD / RADAR</small>
+      </span>
+    </a>
+    <div class="topbar-right">
+      <span class="local-chip"><span class="status-light"></span> 本地运行 · 无账号</span>
+      <button class="ghost-btn" id="eval-btn" type="button">评测说明</button>
+      <button class="history-btn" id="history-btn" type="button">
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M3.5 5.5h13M3.5 10h13M3.5 14.5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        检索历史
+        <span class="count-pill" id="history-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="radar-toolbar" id="radar-toolbar" hidden>
+      <div class="radar-toolbar-top">
+        <div class="radar-kicker">
+          <span class="radar-kicker-dot"></span>
+          <span class="mono">PERSONAL RADAR</span>
+          <span class="radar-kicker-sep">/</span>
+          <span id="radar-run-created">等待扫描</span>
+        </div>
+        <div class="radar-toolbar-actions">
+          <button class="ghost-btn" id="radar-settings-btn" type="button">扫描设置</button>
+          <button class="mini-btn" id="radar-interest-btn" type="button">重选方向</button>
+          <button class="radar-rescan-btn" id="radar-rescan-btn" type="button">
+            再扫一次 <span aria-hidden="true">↻</span>
+          </button>
+        </div>
+      </div>
+      <div class="radar-hero">
+        <div class="radar-hero-copy">
+          <p class="eyebrow">YOUR INTEREST / PERSONAL RADAR</p>
+          <h1>你的技术雷达<span>。</span></h1>
+          <p class="radar-context" id="radar-context">按你的兴趣筛选出的变化，只保留有正文证据的事件。</p>
+        </div>
+        <div class="radar-focus-panel">
+          <span class="radar-focus-label">本轮关注</span>
+          <div class="radar-focus-chips" id="radar-focus-chips"></div>
+          <span class="radar-focus-hint" id="radar-focus-hint">兴趣选择会在扫描时进入查询规划。</span>
+          <div class="radar-usage" id="radar-usage">
+            <div class="radar-usage-head">
+              <span>今日真实消耗</span>
+              <span class="usage-live" id="usage-live">已同步</span>
+            </div>
+            <div class="radar-usage-values" id="radar-usage-values">搜索 0 · 正文 0 · 模型 0 · tokens 0/0</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="radar-beep"></span> TECH · LIFE · SPORTS · NEWS / PERSONAL RADAR <span class="eyebrow-tag">LOCAL</span></p>
+        <h1>在噪声里，<br><em>捕捉真正的变化。</em></h1>
+        <p class="lede">从 AI 工程到生活、运动、新闻与财经，按你的兴趣检索近期变化。先搜索、再读正文、逐条核验证据；证据不够时，Agent 会说明还缺什么、为什么补搜，以及何时停下。</p>
+        <div class="hero-notes">
+          <span><i class="dot dot-green"></i> 正文级证据</span>
+          <span><i class="dot dot-blue"></i> 可解释补搜</span>
+          <span><i class="dot dot-amber"></i> 未确认照实保留</span>
+        </div>
+      </div>
+      <aside class="hero-stats" aria-label="本期概览">
+        <div class="stat-head">
+          <span>本期精选</span>
+          <span class="mono" id="hero-mode">DEMO</span>
+        </div>
+        <div class="stat-number" id="hero-count">00</div>
+        <div class="stat-unit">EVENTS / 仅保留少量高价值事件</div>
+        <div class="stat-rule"></div>
+        <dl class="stat-meta">
+          <div><dt>时间窗</dt><dd id="hero-window">最近 7 天</dd></div>
+          <div><dt>上次扫描</dt><dd id="hero-scanned">尚未开始</dd></div>
+          <div><dt>调用预算</dt><dd id="hero-budget">8 搜索 / 15 读取 / 9 模型</dd></div>
+        </dl>
+        <div class="radar-visual" aria-hidden="true">
+          <div class="radar-ring r1"></div>
+          <div class="radar-ring r2"></div>
+          <div class="radar-ring r3"></div>
+          <div class="radar-sweep"></div>
+          <span class="radar-ping p1"></span>
+          <span class="radar-ping p2"></span>
+          <span class="radar-ping p3"></span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="update-banner" id="update-banner" hidden aria-live="polite">
+      <div class="update-copy">
+        <span class="update-icon" aria-hidden="true">↗</span>
+        <div>
+          <strong id="update-title">有新的技术变化</strong>
+          <p id="update-text"></p>
+        </div>
+      </div>
+      <div class="update-actions">
+        <button class="mini-btn" id="view-updates-btn" type="button">查看最新</button>
+        <button class="mini-btn mini-btn-quiet" id="read-all-updates-btn" type="button">全部已读</button>
+      </div>
+    </section>
+
+    <section class="console" aria-labelledby="console-title">
+      <div class="console-head">
+        <div class="section-heading">
+          <span class="section-index">01</span>
+          <div>
+            <h2 id="console-title">设定扫描范围</h2>
+            <p>最多选择三个话题。Agent 会围绕它们规划中英文查询。</p>
+          </div>
+        </div>
+        <div class="console-head-actions">
+          <button class="text-btn" id="back-to-radar-btn" type="button" hidden>← 返回雷达</button>
+          <button class="text-btn" id="interest-open-btn" type="button">按兴趣选择</button>
+          <span class="console-kicker">SCAN CONFIG</span>
+        </div>
+      </div>
+
+      <form id="scan-form" novalidate>
+        <div class="console-grid">
+          <div class="topic-pane">
+            <div class="field-label">
+              <span>关注话题</span>
+              <span class="field-note" id="topic-count">已选 3 / 3</span>
+            </div>
+            <div class="topic-grid" id="topic-presets"></div>
+            <div class="custom-row">
+              <label class="sr-only" for="custom-topic">自定义话题</label>
+              <input id="custom-topic" type="text" maxlength="24" autocomplete="off" placeholder="自定义话题，例如 RAG 评测">
+              <button class="add-topic-btn" id="add-topic-btn" type="button" aria-label="添加自定义话题">＋</button>
+            </div>
+            <div class="custom-tags" id="custom-tags"></div>
+            <p class="selection-hint" id="selection-hint">选择预设方向，或添加一个你关心的细分话题。</p>
+          </div>
+
+          <div class="launch-pane">
+            <div class="setting-row">
+              <div class="field-label"><span>时间范围</span><span class="field-note">按事件日期判断</span></div>
+              <div class="segmented" id="window-segmented" role="group" aria-label="时间范围">
+                <button type="button" data-window="day">最近 24 小时</button>
+                <button type="button" data-window="week" class="active" aria-pressed="true">最近 7 天</button>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="field-label"><span>运行模式</span><span class="field-note" id="mode-availability">演示不耗额度</span></div>
+              <div class="segmented mode-segmented" id="mode-segmented" role="group" aria-label="运行模式">
+                <button type="button" data-mode="demo" class="active" aria-pressed="true">
+                  <span class="mode-dot"></span>演示样例
+                </button>
+                <button type="button" data-mode="live" aria-pressed="false">
+                  <span class="mode-dot"></span>真实检索
+                </button>
+              </div>
+            </div>
+
+            <div class="budget-box">
+              <div class="budget-line"><span>单任务硬预算</span><span class="mono" id="budget-inline">8 / 15 / 9</span></div>
+              <div class="budget-track">
+                <span class="budget-piece search"></span>
+                <span class="budget-piece read"></span>
+                <span class="budget-piece model"></span>
+              </div>
+              <div class="budget-legend">
+                <span><i class="dot dot-blue"></i>搜索</span>
+                <span><i class="dot dot-green"></i>正文读取</span>
+                <span><i class="dot dot-amber"></i>模型调用</span>
+                <span class="budget-time" id="budget-time">≤ 120 秒</span>
+              </div>
+            </div>
+
+            <button class="scan-btn" id="scan-btn" type="submit">
+              <span class="scan-btn-label">开始扫描</span>
+              <span class="scan-btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </button>
+            <p class="daily-note" id="daily-note">今日真实消耗：搜索 0 次 · 正文 0 次 · 模型 0 次 · tokens 0/0</p>
+            <p class="scan-footnote" id="scan-footnote">今日调用量实时统计；演示调用不计入真实消耗。</p>
+          </div>
+        </div>
+      </form>
+      <div class="mode-notice demo" id="mode-notice" role="note">
+        <span class="notice-mark">DEMO</span>
+        <p id="mode-notice-text">演示使用虚构样例；未执行实时搜索，不消耗远程调用额度；演示日期不代表真实事件日期。</p>
+      </div>
+    </section>
+
+    <div class="inline-error" id="inline-error" hidden role="alert">
+      <div>
+        <strong id="error-title">无法开始任务</strong>
+        <p id="error-text"></p>
+      </div>
+      <button class="icon-btn" id="dismiss-error" type="button" aria-label="关闭错误提示">×</button>
+    </div>
+
+    <section class="progress-section" id="progress-section" hidden aria-labelledby="progress-title">
+      <div class="progress-card">
+        <div class="progress-head">
+          <div class="section-heading">
+            <span class="section-index">02</span>
+            <div>
+              <h2 id="progress-title">检索过程</h2>
+              <p id="run-meta">等待开始</p>
+            </div>
+          </div>
+          <div class="progress-actions">
+            <span class="run-status" id="run-status"><i class="dot"></i>准备中</span>
+            <button class="cancel-btn" id="cancel-btn" type="button">取消任务</button>
+          </div>
+        </div>
+
+        <div class="progress-meter">
+          <div class="progress-top">
+            <span id="stage-label">规划检索策略</span>
+            <span class="mono" id="progress-percent">0%</span>
+          </div>
+          <div class="progress-bar"><span id="progress-fill"></span></div>
+        </div>
+
+        <div class="stages" id="stage-rail" aria-label="检索阶段"></div>
+
+        <div class="stop-banner" id="stop-banner" hidden>
+          <span class="stop-label" id="stop-label">停止原因</span>
+          <p id="stop-message"></p>
+        </div>
+
+        <div class="run-metrics" id="run-metrics"></div>
+
+        <details class="query-details" id="query-details">
+          <summary>
+            <span>查询与补搜记录</span>
+            <span class="summary-meta" id="query-summary">0 条查询</span>
+          </summary>
+          <div class="query-list" id="query-list"></div>
+          <div class="actions-list" id="actions-list"></div>
+        </details>
+      </div>
+    </section>
+
+    <section class="results-section" id="results-section" aria-labelledby="results-title">
+      <div class="results-head">
+        <div class="section-heading">
+          <span class="section-index">03</span>
+          <div>
+            <div class="title-line">
+              <h2 id="results-title">本期精选</h2>
+              <span class="result-count" id="results-count">00</span>
+            </div>
+            <p id="results-subtitle">只保留有正文逐字证据、值得关注的变化。</p>
+          </div>
+        </div>
+        <div class="results-actions">
+          <button class="text-btn" id="results-change-direction-btn" type="button">重选方向</button>
+          <span class="result-mode" id="result-mode">演示样例</span>
+          <button class="text-btn" id="mark-run-read-btn" type="button" hidden>全部标记已读</button>
+        </div>
+      </div>
+      <div id="results-body">
+        <div class="skeleton-grid" id="loading-skeleton">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <strong>信号场 SignalField</strong>
+      <span>本地优先的兴趣动态搜索 Agent</span>
+    </div>
+    <div class="footer-right">
+      <span>正文证据 · 显式状态机 · 可回放评测</span>
+      <button class="text-btn" id="footer-eval-btn" type="button">查看评测说明</button>
+    </div>
+  </footer>
+
+  <div class="interest-layer" id="interest-layer" hidden>
+    <div class="drawer-backdrop" data-close="interest"></div>
+    <section class="interest-modal" role="dialog" aria-modal="true" aria-labelledby="interest-title" tabindex="-1">
+      <div class="interest-head">
+        <div>
+          <p class="eyebrow small">SET YOUR SIGNAL / 兴趣雷达</p>
+          <span class="interest-step" id="interest-step-label">ROUND 01 / 02 · 广域发现</span>
+        </div>
+        <button class="icon-btn drawer-close interest-close" id="interest-close" type="button" data-close="interest" aria-label="关闭兴趣选择">×</button>
+      </div>
+      <div class="interest-intro">
+        <h2 id="interest-title">先圈定<br><em>你的大方向。</em></h2>
+        <p class="interest-sub" id="interest-sub">点击兴趣球里漂浮的大方向，最多选三个。它们会决定这一轮搜索的边界。</p>
+      </div>
+      <div class="interest-layout">
+        <div class="interest-visual">
+          <div class="interest-orb" id="interest-orb" aria-label="动态兴趣球">
+            <span class="orb-ring orb-ring-1" aria-hidden="true"></span>
+            <span class="orb-ring orb-ring-2" aria-hidden="true"></span>
+            <span class="orb-ring orb-ring-3" aria-hidden="true"></span>
+            <span class="orb-sweep" aria-hidden="true"></span>
+            <span class="orb-core" aria-hidden="true"><i></i>YOUR<br>SIGNAL</span>
+            <span class="orb-spark s1" aria-hidden="true"></span>
+            <span class="orb-spark s2" aria-hidden="true"></span>
+            <span class="orb-spark s3" aria-hidden="true"></span>
+            <div class="orb-keywords" id="interest-keywords" role="group" aria-label="兴趣关键词"></div>
+          </div>
+          <div class="orb-hint-row">
+            <p class="orb-hint" id="orb-hint">漂浮标签可以点选 · 悬停或按钮暂停</p>
+            <button class="orb-pause" id="orb-pause" type="button">暂停漂浮</button>
+            <button class="orb-shuffle" id="interest-shuffle" type="button">换一批</button>
+          </div>
+        </div>
+        <div class="interest-side">
+          <div class="interest-step-row">
+            <span class="interest-round" id="interest-round">ROUND 01 / 02</span>
+            <div class="interest-dots" id="interest-dots" aria-hidden="true">
+              <span class="interest-dot active"></span>
+              <span class="interest-dot"></span>
+            </div>
+          </div>
+          <button class="interest-return" id="interest-return-radar" type="button" hidden>← 返回当前雷达</button>
+          <div class="interest-mode">
+            <div class="interest-mode-head">
+              <span>运行模式</span>
+              <span id="interest-mode-note">演示样例</span>
+            </div>
+            <div class="interest-mode-switch" id="interest-mode-switch" role="group" aria-label="运行模式">
+              <button type="button" data-interest-mode="demo">演示样例</button>
+              <button type="button" data-interest-mode="live">真实检索</button>
+            </div>
+          </div>
+          <span class="interest-choice-label">你的选择</span>
+          <div class="interest-summary empty" id="interest-summary">还没有选择</div>
+          <div class="interest-chips" id="interest-chips"></div>
+          <p class="interest-note" id="interest-note">第一轮只决定方向，第二轮会在球里换成更细的关键词。默认：最近 7 天 · 演示样例。</p>
+          <div class="interest-actions">
+            <button class="interest-back" id="interest-back" type="button" hidden>← 重选方向</button>
+            <button class="interest-start" id="interest-start" type="button" disabled>
+              <span id="interest-action-label">下一步 · 选细一点</span>
+              <span aria-hidden="true" id="interest-action-arrow">→</span>
+            </button>
+          </div>
+          <button class="interest-skip" id="interest-skip" type="button">先看看示例</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="drawer-layer" id="detail-layer" hidden>
+    <div class="drawer-backdrop" data-close="detail"></div>
+    <aside class="detail-drawer" id="detail-drawer" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+      <div class="drawer-loading" id="detail-loading">正在整理事件详情…</div>
+      <div id="detail-content"></div>
+    </aside>
+  </div>
+
+  <div class="drawer-layer" id="history-layer" hidden>
+    <div class="drawer-backdrop" data-close="history"></div>
+    <aside class="history-drawer" role="dialog" aria-modal="true" aria-labelledby="history-title">
+      <div class="drawer-header">
+        <div>
+          <p class="eyebrow small">RUN ARCHIVE</p>
+          <h2 id="history-title">检索历史</h2>
+        </div>
+        <button class="icon-btn drawer-close" type="button" data-close="history" aria-label="关闭历史">×</button>
+      </div>
+      <p class="drawer-intro">每次扫描都以独立状态机运行；未读只针对新收录或出现实质更新的事件。</p>
+      <div class="history-list" id="history-list"></div>
+    </aside>
+  </div>
+
+  <div class="modal-layer" id="eval-layer" hidden>
+    <div class="drawer-backdrop" data-close="eval"></div>
+    <section class="eval-modal" role="dialog" aria-modal="true" aria-labelledby="eval-title">
+      <div class="drawer-header">
+        <div>
+          <p class="eyebrow small">EVALUATION / REPLAY</p>
+          <h2 id="eval-title">怎么评测，而不是怎么演示</h2>
+        </div>
+        <button class="icon-btn drawer-close" type="button" data-close="eval" aria-label="关闭评测说明">×</button>
+      </div>
+      <div class="eval-body">
+        <p>项目包含独立的离线回放评测，对同一批固定材料运行三条策略线，避免把演示动画当成效果。</p>
+        <div class="eval-grid">
+          <div class="eval-item"><span class="mono">A</span><h3>单次搜索直出</h3><p>一次搜索、少量读取后直接总结，作为低成本基线。</p></div>
+          <div class="eval-item"><span class="mono">B</span><h3>固定查询链</h3><p>与 Agent 同预算，但查询、读取和停止规则固定。</p></div>
+          <div class="eval-item accent"><span class="mono">C</span><h3>证据缺口自适应</h3><p>依据日期、条件、冲突与覆盖缺口决定是否定向补搜。</p></div>
+        </div>
+        <h3>运行方式</h3>
+        <pre><code>python -m evaluation.run_replay</code></pre>
+        <p>命令会输出 A/B/C 的覆盖率、引用支持率、重复率、补搜收益与调用消耗，并生成可人工标注的 CSV 模板。固定材料结果与实时 Tavily 结果分开记录。</p>
+        <div class="eval-caveat">
+          <strong>限制说明</strong>
+          <p>没有密钥时，真实检索效果尚未验证。回放使用合成的固定材料与确定性模型替身，只能检验检索策略和工程闭环，不能外推为线上模型能力。</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+  <script src="/static/app.js?v=14" defer></script>
+</body>
+</html>
