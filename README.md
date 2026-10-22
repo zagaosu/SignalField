@@ -1,5 +1,7 @@
 # 信号场 SignalField
 
+> GitHub: https://github.com/zagaosu/SignalField
+
 一个可本地试用的通用兴趣动态搜索 Agent：覆盖 **技术、生活、运动、新闻、财经、娱乐、科学、健康、汽车、旅行、教育、游戏、时尚** 等 20 个方向，在最近 1 / 7 天内执行「规划 → 搜索 → 读正文 → 聚合事件 → 证据核验 → 缺口补搜 → 排序保存」的完整闭环。
 
 项目重点不是聊天，而是展示 **搜索策略、工具调用、证据处理、补搜决策和效果评测**。默认演示不依赖任何密钥；真实检索支持 **DeepSeek Search** 或 **Tavily**，并接入任意 OpenAI-compatible `chat/completions` 模型。
@@ -48,16 +50,14 @@
 要求 Python 3.11+（本机使用 3.13.2 测试），Windows / macOS / Linux 均可。演示模式完全免费；真实模式按搜索服务与模型服务商计费。
 
 ```bash
-git clone https://github.com/<your-account>/ai_search.git
-cd ai_search
+git clone https://github.com/zagaosu/SignalField.git
+cd SignalField
 ```
-
-目录名可以按你的仓库名调整；下面默认使用 `ai_search`。
 
 ### Windows（推荐）
 
 ```powershell
-cd ai_search
+cd SignalField
 powershell -ExecutionPolicy Bypass -File .\start.ps1
 ```
 
@@ -68,7 +68,7 @@ powershell -ExecutionPolicy Bypass -File .\start.ps1
 ### 手动启动
 
 ```powershell
-cd ai_search
+cd SignalField
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
@@ -79,7 +79,7 @@ python -m app
 Linux / macOS：
 
 ```bash
-cd ai_search
+cd SignalField
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 cp .env.example .env
